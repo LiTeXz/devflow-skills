@@ -50,7 +50,7 @@ Choose the narrowest test layer that protects the risk. Widen only when the beha
    - protected invariant or read model outcome
    - dependencies and unresolved facts
 5. Mark slices that need `spring-web-boundaries`, persistence integration, contracts, or external-system seams.
-6. Pass the slices to `implementation-planning` or `tdd-refactor`.
+6. Pass the slices to `implementation-planning` or `tdd-skill`.
 
 ## Output Format
 

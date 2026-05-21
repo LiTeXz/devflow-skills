@@ -59,7 +59,7 @@ Use this skill when a failure or bug exists and the root cause is not proven.
 
 ## When To Switch Workflows
 
-- After root cause is identified, use `tdd-refactor` for the regression test and fix if behavior changes.
+- After root cause is identified, use `tdd-skill` for the regression test and fix if behavior changes.
 - If the root cause shows a bad plan, return to `implementation-planning`.
 - If the failure touches Spring Web contracts, use `spring-web-boundaries`.
 - Before completion, use `verification-before-completion`.

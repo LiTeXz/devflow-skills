@@ -7,7 +7,7 @@
     -> 设计已确认且要实现：ddd-to-tdd-handoff
     -> 多步骤实现：implementation-planning
     -> 开始编码：executing-implementation-plan
-      -> 每个行为切片：tdd-refactor
+      -> 每个行为切片：tdd-skill
       -> Spring Web 变更：spring-web-boundaries
       -> 失败/异常：systematic-debugging
     -> 独立模块或新上下文审查：parallel-agent-orchestration
@@ -25,6 +25,6 @@ engineering-workflow-router
   -> ddd-to-tdd-handoff
   -> implementation-planning
   -> executing-implementation-plan
-  -> tdd-refactor
+  -> tdd-skill
   -> verification-before-completion
 ```

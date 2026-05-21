@@ -1,6 +1,6 @@
 ---
 name: engineering-workflow-router
-description: "Mandatory engineering workflow router. Use at the start of software development, refactoring, bug fixing, domain modeling, code review, verification, branch finishing, or commit preparation to classify the task and select required skills such as ddd-event-storming-design, ddd-to-tdd-handoff, implementation-planning, executing-implementation-plan, tdd-refactor, spring-web-boundaries, systematic-debugging, requesting-code-review, receiving-code-review, verification-before-completion, finishing-development-branch, or parallel-agent-orchestration."
+description: "Mandatory engineering workflow router. Use at the start of software development, refactoring, bug fixing, domain modeling, code review, verification, branch finishing, or commit preparation to classify the task and select required skills such as ddd-event-storming-design, ddd-to-tdd-handoff, implementation-planning, executing-implementation-plan, tdd-skill, spring-web-boundaries, systematic-debugging, requesting-code-review, receiving-code-review, verification-before-completion, finishing-development-branch, or parallel-agent-orchestration."
 ---
 
 # Engineering Workflow Router
@@ -38,7 +38,7 @@ Use this skill before doing engineering work. Its job is to choose the mandatory
 - Use `ddd-to-tdd-handoff` after a DDD design is confirmed and the user wants implementation slices, tests, or development planning.
 - Use `implementation-planning` for multi-step implementation, refactoring, risky changes, or any task whose safe execution needs more than one red/green slice.
 - Use `executing-implementation-plan` when following an existing plan or after writing one.
-- Use `tdd-refactor` when writing or changing executable behavior, fixing bugs, characterizing existing behavior, or doing behavior-preserving refactors.
+- Use `tdd-skill` when writing or changing executable behavior, fixing bugs, characterizing existing behavior, or doing behavior-preserving refactors.
 - Use `spring-web-boundaries` when changing Java/Spring controllers, REST endpoints, request/response mapping, validation, security, uploads/downloads, exports, or service/controller boundaries.
 - Use `systematic-debugging` when a test fails unexpectedly, a bug report lacks a proven root cause, or a proposed fix is based on guessing.
 - Use `parallel-agent-orchestration` when independent modules, plan review, implementation, and review can be split across non-overlapping contexts.
@@ -66,10 +66,10 @@ Keep the routing concise. After routing, immediately follow the selected skills.
 
 ## Default Chains
 
-- New domain feature: `ddd-event-storming-design` -> `ddd-to-tdd-handoff` -> `implementation-planning` -> `executing-implementation-plan` with `tdd-refactor` -> `verification-before-completion`.
-- Bug fix: `systematic-debugging` -> `tdd-refactor` -> `verification-before-completion`.
-- Pure refactor: `implementation-planning` -> `tdd-refactor` characterization -> `executing-implementation-plan` -> `verification-before-completion`.
-- Spring endpoint change: `tdd-refactor` + `spring-web-boundaries` -> `verification-before-completion`.
+- New domain feature: `ddd-event-storming-design` -> `ddd-to-tdd-handoff` -> `implementation-planning` -> `executing-implementation-plan` with `tdd-skill` -> `verification-before-completion`.
+- Bug fix: `systematic-debugging` -> `tdd-skill` -> `verification-before-completion`.
+- Pure refactor: `implementation-planning` -> `tdd-skill` characterization -> `executing-implementation-plan` -> `verification-before-completion`.
+- Spring endpoint change: `tdd-skill` + `spring-web-boundaries` -> `verification-before-completion`.
 - Review feedback: `receiving-code-review` -> targeted verification -> `verification-before-completion`.
 - Commit or PR: `verification-before-completion` -> `finishing-development-branch`.
 

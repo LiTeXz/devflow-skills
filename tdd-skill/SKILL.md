@@ -1,9 +1,9 @@
 ---
-name: tdd-refactor
+name: tdd-skill
 description: "Pure TDD workflow for greenfield feature development, bug fixes, behavior-preserving refactors, characterization tests, and characterize-then-fix work. Use when Codex needs test-first discipline to build new behavior from scratch or change existing code without drifting behavior. Applies across languages and architectures. Do not use for technology-specific layering rules, documentation-only edits, trivial formatting-only changes, or purely exploratory prototypes where no executable behavior is expected."
 ---
 
-# TDD Development
+# TDD Skill
 
 Use a project-agnostic TDD cadence to build or change behavior: define the next observable behavior first, make it fail, make it pass, and refactor only after green.
 

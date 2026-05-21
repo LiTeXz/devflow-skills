@@ -25,7 +25,7 @@ Do not edit production code while using this skill.
    - expected RED, GREEN, or unchanged result
    - completion standard
 5. Keep each task small enough to complete and verify independently.
-6. Mark steps that require `tdd-refactor`, `spring-web-boundaries`, or `systematic-debugging`.
+6. Mark steps that require `tdd-skill`, `spring-web-boundaries`, or `systematic-debugging`.
 7. State whether user confirmation is required before execution.
 
 ## Step Size

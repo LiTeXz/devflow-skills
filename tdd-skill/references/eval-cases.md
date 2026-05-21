@@ -1,6 +1,6 @@
 # Eval Cases
 
-Use these cases to iterate `tdd-refactor`. When real use reveals a new way agents bypass TDD, vague evidence, or pick the wrong test layer, add a case here.
+Use these cases to iterate `tdd-skill`. When real use reveals a new way agents bypass TDD, vague evidence, or pick the wrong test layer, add a case here.
 
 ## Case 1: Production Code First
 

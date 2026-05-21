@@ -2,20 +2,20 @@
 
 简体中文 | [English](README.en.md)
 
-DevFlow 是一组面向 Codex 的工程工作流 skills。它把 DDD、TDD、计划、执行、调试、评审、验证和分支收尾组织成一套可组合的强制工作流。
+DevFlow Skills 是一组面向 Codex 的工程工作流 skills。它把 DDD、TDD、计划、执行、调试、评审、验证和分支收尾组织成一套可组合的强制工作流。
 
 ## 安装
 
 从仓库根目录安装全部 skills：
 
 ```bash
-npx skills add https://github.com/<owner>/DevFlow -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-refactor spring-web-boundaries
+npx skills add https://github.com/one-eyed-fish/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
 ```
 
 安装单个 skill：
 
 ```bash
-npx skills add https://github.com/<owner>/DevFlow/tree/main/engineering-workflow-router -g -a codex
+npx skills add https://github.com/one-eyed-fish/devflow-skills/tree/main/engineering-workflow-router -g -a codex
 ```
 
 安装完成后，重启 Codex 才会加载新的 skill。
@@ -33,7 +33,7 @@ npx skills add https://github.com/<owner>/DevFlow/tree/main/engineering-workflow
 - `receiving-code-review`：逐条处理 review feedback，分类、修复、验证。
 - `finishing-development-branch`：提交、推送、PR 或交接前检查工作区和中文 Conventional Commit。
 - `parallel-agent-orchestration`：在文件范围不重叠时拆分并行 agent 工作。
-- `tdd-refactor`：项目无关的 RED/GREEN/REFACTOR TDD 工作流和协议校验。
+- `tdd-skill`：项目无关的 RED/GREEN/REFACTOR TDD 工作流和协议校验。
 - `spring-web-boundaries`：Spring Web controller、endpoint、validation、security、上传下载、导出和 service 边界规则。
 
 ## 技能组合图
@@ -45,7 +45,7 @@ npx skills add https://github.com/<owner>/DevFlow/tree/main/engineering-workflow
     -> 设计已确认且要实现：ddd-to-tdd-handoff
     -> 多步骤实现：implementation-planning
     -> 开始编码：executing-implementation-plan
-      -> 每个行为切片：tdd-refactor
+      -> 每个行为切片：tdd-skill
       -> Spring Web 变更：spring-web-boundaries
       -> 失败/异常：systematic-debugging
     -> 完成实现：requesting-code-review
@@ -68,7 +68,7 @@ requesting-code-review/
 receiving-code-review/
 finishing-development-branch/
 parallel-agent-orchestration/
-tdd-refactor/
+tdd-skill/
 spring-web-boundaries/
 ```
 
@@ -85,7 +85,7 @@ python -X utf8 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py e
 TDD 协议回归：
 
 ```bash
-python -X utf8 tdd-refactor/scripts/run_protocol_examples.py
+python -X utf8 tdd-skill/scripts/run_protocol_examples.py
 ```
 
 DDD 设计校验回归：

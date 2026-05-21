@@ -2,20 +2,20 @@
 
 [简体中文](README.md) | English
 
-DevFlow is a set of Codex engineering workflow skills. It organizes DDD, TDD, planning, execution, debugging, review, verification, and branch finishing into a composable workflow system.
+DevFlow Skills is a set of Codex engineering workflow skills. It organizes DDD, TDD, planning, execution, debugging, review, verification, and branch finishing into a composable workflow system.
 
 ## Installation
 
 Install all skills from the repository root:
 
 ```bash
-npx skills add https://github.com/<owner>/DevFlow -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-refactor spring-web-boundaries
+npx skills add https://github.com/one-eyed-fish/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
 ```
 
 Install a single skill:
 
 ```bash
-npx skills add https://github.com/<owner>/DevFlow/tree/main/engineering-workflow-router -g -a codex
+npx skills add https://github.com/one-eyed-fish/devflow-skills/tree/main/engineering-workflow-router -g -a codex
 ```
 
 Restart Codex after installation so the new skills are loaded.
@@ -33,7 +33,7 @@ Restart Codex after installation so the new skills are loaded.
 - `receiving-code-review`: classifies and resolves review feedback with verification.
 - `finishing-development-branch`: prepares a branch for commit, push, PR, or handoff.
 - `parallel-agent-orchestration`: splits independent work across agents with non-overlapping ownership.
-- `tdd-refactor`: project-agnostic RED/GREEN/REFACTOR TDD workflow and protocol validation.
+- `tdd-skill`: project-agnostic RED/GREEN/REFACTOR TDD workflow and protocol validation.
 - `spring-web-boundaries`: Spring Web boundary guardrails for controllers, endpoints, validation, security, uploads/downloads, exports, and service layering.
 
 ## Workflow Map
@@ -45,7 +45,7 @@ user request
     -> confirmed design to implementation: ddd-to-tdd-handoff
     -> multi-step work: implementation-planning
     -> coding: executing-implementation-plan
-      -> behavior slice: tdd-refactor
+      -> behavior slice: tdd-skill
       -> Spring Web change: spring-web-boundaries
       -> failure or unknown root cause: systematic-debugging
     -> implementation complete: requesting-code-review
@@ -68,7 +68,7 @@ requesting-code-review/
 receiving-code-review/
 finishing-development-branch/
 parallel-agent-orchestration/
-tdd-refactor/
+tdd-skill/
 spring-web-boundaries/
 ```
 
@@ -85,7 +85,7 @@ python -X utf8 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py e
 TDD protocol regression:
 
 ```bash
-python -X utf8 tdd-refactor/scripts/run_protocol_examples.py
+python -X utf8 tdd-skill/scripts/run_protocol_examples.py
 ```
 
 DDD design guardrail regression:

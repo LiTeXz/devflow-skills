@@ -35,7 +35,7 @@ For each task:
    - relevant test names or checks
    - result summary
 5. If tests fail unexpectedly, switch to `systematic-debugging`.
-6. If the next step is TDD behavior work, use `tdd-refactor`.
+6. If the next step is TDD behavior work, use `tdd-skill`.
 7. If the task touches Spring Web boundaries, use `spring-web-boundaries`.
 8. If reality invalidates the plan, stop and revise the plan.
 

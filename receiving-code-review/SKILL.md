@@ -19,7 +19,7 @@ For each comment:
    - `already_addressed`
    - `needs_more_context`
 3. Identify the affected behavior, file, and test surface.
-4. Decide whether the fix requires `tdd-refactor`, `systematic-debugging`, or `spring-web-boundaries`.
+4. Decide whether the fix requires `tdd-skill`, `systematic-debugging`, or `spring-web-boundaries`.
 
 ## Fix Workflow
 
