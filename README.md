@@ -4,18 +4,33 @@
 
 DevFlow Skills 是一组面向 Codex 的工程工作流 skills。它把 DDD、TDD、计划、执行、调试、评审、验证和分支收尾组织成一套可组合的强制工作流。
 
+## 重要：必须开启 Plan 模式
+
+使用 DevFlow Skills 前，请先在 Codex 中开启 Plan 模式。
+
+这些 skills 依赖“先澄清、先建模、先计划、再执行”的工作方式。尤其是 DDD、TDD、实现计划、调试和评审流程，如果没有先进入 Plan 模式，Codex 很容易被用户的数据表、CRUD 页面、零散实现要求带偏，直接进入编码或一次性输出未经确认的设计。
+
+推荐使用方式：
+
+1. 先开启 Plan 模式。
+2. 让 `engineering-workflow-router` 判断任务类型和必需 skill。
+3. 按 skill 要求完成确认、建模或计划。
+4. 用户确认后再进入实现、验证、提交或 PR。
+
+不要把 Plan 模式当成可选步骤；它是 DevFlow 工作流的入口保护。
+
 ## 安装
 
 从仓库根目录安装全部 skills：
 
 ```bash
-npx skills add https://github.com/one-eyed-fish/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
+npx skills add https://github.com/LiTeXz/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
 ```
 
 安装单个 skill：
 
 ```bash
-npx skills add https://github.com/one-eyed-fish/devflow-skills/tree/main/engineering-workflow-router -g -a codex
+npx skills add https://github.com/LiTeXz/devflow-skills/tree/main/engineering-workflow-router -g -a codex
 ```
 
 安装完成后，重启 Codex 才会加载新的 skill。

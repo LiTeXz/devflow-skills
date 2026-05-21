@@ -9,9 +9,27 @@ description: 使用事件风暴和 CQRS 思想进行纯 DDD 领域建模。Use t
 
 Use event storming as the entry point for DDD modeling.
 
+Treat event storming as collaborative brainstorming followed by disciplined convergence. First create a broad candidate event pool from business language, actor goals, lifecycle changes, failures, external facts, and query needs. Then filter candidates into accepted domain events only when they have business meaning, a production path, and a consequence for actors, rules, policies, aggregates, or read models.
+
+Do not treat the first brainstormed event list as the final model. Candidate events are working material; accepted domain events are design conclusions.
+
 Start from the current problem domain, business facts, domain events, commands, rules, state changes, and read models. Derive aggregates afterward.
 
 Do not start from database tables, CRUD pages, HTTP APIs, package structure, entities, aggregate roots, repositories, or tactical DDD terminology.
+
+Assume many users do not speak DDD. They may describe the problem as tables, fields, CRUD pages, modules, controllers, DTOs, or "manage company/department/position/employee". Treat that language as raw discovery input, not as the modeling frame.
+
+Always translate data-driven or CRUD-driven requests into business-event exploration:
+
+- table or entity names -> possible affected business subjects, reference data, read models, or lifecycle candidates
+- fields -> possible business facts, decisions, invariants, or projection needs
+- create/update/delete operations -> business commands that explain why the change matters
+- status fields -> lifecycle events and rule transitions
+- foreign keys -> business relationships, ownership, dependency, or consistency questions
+- sync/upsert wording -> external facts, acceptance/rejection/conflict/deferment events, and authority questions
+- admin pages -> actor goals, responsibilities, approvals, ownership changes, and audit concerns
+
+Do not echo the user's data model back as a DDD model. If the user asks in CRUD terms, first explain the translation boundary briefly, then proceed through the confirmation gates in business language.
 
 Always identify the business actors, external systems, timers, and affected subjects before finalizing commands and events. Commands are issued by an actor; events change something that matters to one or more actors or read models.
 
@@ -23,14 +41,14 @@ Prefer persistent domain modeling when the user is evolving the same business do
 
 Use a two-stage workflow for requirements-driven modeling:
 
-1. Design draft: analyze the request, read relevant existing model files if any, infer a complete candidate domain model from the available facts, and present the design conclusions in chat.
-2. Conclusion confirmation and persistence: ask the user to confirm or correct the design conclusions one by one. Create or update `event-storming/` files only after the user explicitly confirms the candidate model or a specific set of changes.
+1. Design draft: analyze the request, read relevant existing model files if any, brainstorm candidate events and modeling alternatives, infer the next useful design section, and present only the conclusions that are safe to validate at the current confirmation gate. Present a complete candidate model only after upstream gates that affect it are already confirmed or explicitly supplied by the user.
+2. Section confirmation and persistence: confirm design sections with the user while the draft is being shaped. Create or update `event-storming/` files only after the user explicitly confirms the candidate model, the changed sections, or a specific set of changes.
 
 Do not create or update persistent model files from a new or changed requirement before confirmation. User requirements are often incomplete, and the requester may not know which missing facts matter for DDD modeling.
 
-Do not interrupt the initial design draft with clarification questions unless the requirement is too incomplete to produce any meaningful DDD draft. If information is missing, make the smallest reasonable assumption, mark it as an inferred conclusion, and include it in the confirmation list.
+Do not interrupt the initial design draft with unrelated clarification questions. However, when a confirmation gate controls downstream modeling, ask the gate question before expanding dependent sections. If information is missing but does not block the current gate, make the smallest reasonable assumption, mark it as an inferred conclusion, and include it in the confirmation list.
 
-Exception: when the request is only a CRUD-like noun list (for example "company, department, position, employee" or "user, role, menu, permission"), do not invent a complete flat management model. First mark the request as a CRUD-template risk, then produce a behavior-first draft around likely actors, collaboration scenarios, lifecycle decisions, and disputed boundaries. Keep assumptions explicit and ask the user to confirm the role/behavior conclusions before persisting files.
+Exception: when the request is a CRUD-like noun list (for example "company, department, position, employee" or "user, role, menu, permission"), do not invent or output a complete management model in the first response, even if existing code contains behaviors that make a full draft possible. First mark the request as a CRUD-template risk, then stop at the problem-domain gate with a behavior-first boundary proposal and one focused confirmation question. Continue to actors, events, commands, aggregates, and read models only after the gate is confirmed or corrected.
 
 If the workspace contains an `event-storming/` model repository, read the relevant files first, but treat this as read-only input until confirmation is received.
 
@@ -40,6 +58,72 @@ If it does not exist:
 - If the user only wants discussion, output the same structure in chat without creating files.
 
 Do not require the user to provide complete requirements upfront. Accept small increments, design from what is available, and expose assumptions, alternatives, and missing business facts as conclusions to confirm before persisting them.
+
+## Brainstorming Adaptation
+
+Use the useful parts of collaborative brainstorming without weakening DDD discipline:
+
+1. Explore context first: inspect existing requirements, model files, docs, and recent domain decisions before proposing changes.
+2. Diverge deliberately: collect candidate events from every plausible actor perspective, downstream consumer, lifecycle transition, approval/rejection, synchronization result, exception, and query need.
+3. Keep candidates cheap: label speculative items as candidate events, not final domain events.
+4. Compare 2-3 modeling approaches when boundaries or lifecycles are contested, such as one aggregate versus a process manager, local event versus external-system fact, or current-domain event versus read-model-only projection.
+5. Recommend one approach and explain the trade-off in domain terms: consistency boundary, actor responsibility, event production path, projection completeness, policy complexity, and future ambiguity.
+6. Present design sections for confirmation. Ask the user to confirm or correct each meaningful section before moving too far ahead; when follow-up questions are needed, ask focused questions one at a time.
+
+For each candidate event, capture enough information to support convergence:
+
+- source: user statement, existing model, inferred actor goal, read-model need, policy reaction, or external fact
+- possible event name in completed business tense
+- initiating actor or external system if known
+- affected subject and downstream consumer
+- possible producing command, aggregate, policy, process, or external fact
+- business reason to keep it
+- reason to reject, split, rename, downgrade to read-model data, or mark unresolved
+
+Only accepted events move into the formal `领域事件清单`. Rejected and unresolved candidates can appear in the draft as screening notes or confirmation items, but should not be persisted as final events unless confirmed.
+
+## Confirmation Protocol
+
+Prefer incremental section confirmation over one large final confirmation.
+
+During a design conversation:
+
+- Confirm major sections as they become stable: problem boundary, actors, candidate event screening, modeling alternatives, accepted events, commands, policies, aggregates, read models, and persistence changes.
+- After presenting a section, ask whether it is correct enough to continue when the answer could change later sections.
+- If the user confirms, records, or corrects a section in the conversation, treat that section as confirmed or corrected. Do not ask the user to confirm the same conclusion again at the end.
+- If the user rejects or changes a section, revise downstream events, commands, aggregates, read models, and confirmation items before continuing.
+- Ask one focused question at a time when a missing fact blocks the next section.
+
+When a key business decision needs user confirmation:
+
+- If `request_user_input` is available in the current environment, use it and provide 2-3 mutually exclusive options. Put the recommended option first and explain the modeling consequence of each option.
+- If `request_user_input` is unavailable, do not present the downstream design as final. State plainly in normal text that the decision must be confirmed before continuing, then ask one focused confirmation question.
+- Do not combine multiple high-impact decisions into one final answer or one bulk confirmation list. Ask them sequentially at the relevant confirmation gate.
+
+Use confirmation gates for sections that determine downstream modeling. Do not fully expand later sections past these gates unless the user already supplied the answer explicitly:
+
+1. Problem-domain gate: confirm the domain name, included responsibilities, excluded responsibilities, and whether the request is a CRUD-template risk. Do this before finalizing actor roles, event screening, commands, aggregates, or read models.
+2. Actor and authority gate: confirm command initiators, affected subjects, external systems, downstream systems, and whether any external source such as OA is authoritative. Do this before deriving accepted events and policies.
+3. Key-rule gate: confirm business rules that shape events and aggregate boundaries, such as single versus multiple assignments, manager eligibility, deletion versus archive, conflict precedence, and automatic versus manual follow-up. Do this before finalizing events, commands, invariants, and policies.
+4. Modeling-alternative gate: when 2-3 approaches are plausible, confirm the recommended approach or the user's chosen alternative before finalizing aggregate boundaries and read models.
+5. Persistence gate: before writing files, confirm only unconfirmed or changed persistence-sensitive conclusions.
+
+When a request is CRUD-looking or contains contested boundaries, prefer a staged response:
+
+1. Present only the next gate section and a short reason why it matters.
+2. Ask one focused confirmation question.
+3. Continue to candidate event screening only after the gate is confirmed or corrected.
+
+Avoid producing a full boundary + actors + events + commands + policies + aggregates + read models draft in one response when earlier gate decisions are still unconfirmed and likely to change the downstream model.
+
+Use the final `结论确认清单` as a delta list, not a duplicate approval form. It should include only:
+
+- conclusions that were not confirmed during the section-by-section conversation
+- conclusions changed after the last user confirmation
+- unresolved alternatives, assumptions, ambiguous terms, or missing business rules
+- persistence-sensitive changes such as renaming, splitting, merging, deleting, or moving model concepts
+
+If all persistence-relevant conclusions were already confirmed during the conversation, say that no additional confirmation items remain and proceed according to the user's requested persistence action.
 
 ## Model Repository
 
@@ -81,19 +165,23 @@ For each user request:
 
 1. Classify the request as new capability, changed capability, expanded problem domain, or design review.
 2. Read only relevant model files before deriving the draft.
-3. Produce a complete candidate design that shows proposed changes to affected indexes and aggregate files together.
-4. Call out assumptions, ambiguous terms, alternative interpretations, and missing business rules as inferred design conclusions, not as pre-design questions.
-5. Ask the user to confirm or correct the design conclusions one by one before writing files.
-6. After confirmation, update affected indexes and aggregate files together.
-7. Preserve semantic evolution notes when renaming, splitting, merging, or moving concepts.
-8. If a new requirement exposes an incomplete old model, fix the model instead of hiding the gap behind a Policy, service, or handler.
-9. End with a short summary of changed files, changed domain concepts, and remaining questions.
+3. Build a candidate event pool before selecting final events.
+4. Compare modeling approaches when a candidate event, actor responsibility, or aggregate boundary has multiple plausible interpretations.
+5. Produce a complete candidate design that shows proposed changes to affected indexes and aggregate files together.
+6. Call out assumptions, ambiguous terms, alternative interpretations, and missing business rules as inferred design conclusions, not as pre-design questions.
+7. Confirm design sections incrementally when their conclusions affect later modeling choices.
+8. After confirmation, update affected indexes and aggregate files together.
+9. Preserve semantic evolution notes when renaming, splitting, merging, or moving concepts.
+10. If a new requirement exposes an incomplete old model, fix the model instead of hiding the gap behind a Policy, service, or handler.
+11. End with a short summary of changed files, changed domain concepts, and remaining questions.
 
 Do not regenerate the whole model unless the user asks or the existing model is too inconsistent to update safely.
 
 ## Modeling Principles
 
 - Model the current problem domain. Do not pre-split bounded contexts.
+- Protect the modeling frame. User wording can be data-driven, but the design response must be behavior-driven and event-driven.
+- Translate nouns, fields, statuses, and CRUD operations into actor goals, lifecycle events, rules, and read-model needs before naming aggregates.
 - Treat actors as first-class modeling input. Distinguish command initiators, affected subjects, approvers, auditors, downstream consumers, timers, and external systems.
 - Mark an external system only when a capability is clearly outside the current system/problem domain.
 - Use business language that domain experts can understand.
@@ -138,6 +226,32 @@ Actor -> Command -> Event(s) -> Affected subject/read model -> Follow-up policy 
 ```
 
 If different actors can issue similar commands, model the difference when it changes required fields, permission assumptions, events, policies, or audit meaning.
+
+### 1.6 Brainstorm Candidate Events
+
+Generate a candidate event pool before selecting formal domain events.
+
+Look for:
+
+- actor-visible outcomes
+- lifecycle transitions
+- approvals, rejections, transfers, overrides, cancellations, and expirations
+- external facts received, accepted, rejected, deferred, conflicted, or failed
+- policy trigger points
+- read-model projection needs
+- exceptions with business meaning
+- vague data-change words that may hide specific business facts
+
+Do not discard a candidate too early merely because it is uncertain. Keep it as a candidate, attach the uncertainty, and later converge through screening and confirmation.
+
+Screen each candidate with these questions:
+
+- Does the business care that this fact happened?
+- Can an actor, timer, policy, process manager, aggregate, or external system produce it?
+- Does it change an actor's options, an affected subject's lifecycle, a rule decision, a policy reaction, or a read model?
+- Is it specific enough, or should it be split or renamed?
+- Is it inside the current problem domain, or only an integration/technical detail?
+- Does keeping it improve the event-command-read-model explanation, or only mirror CRUD data changes?
 
 ### 2. Identify Domain Events
 
@@ -249,21 +363,27 @@ When responding in chat or updating model files, use this order:
 
 1. `问题域边界`
 2. `主体与协作场景`
-3. `领域事件清单`
-4. `命令清单`
-5. `Policy/流程规则`
-6. `聚合设计`
-7. `领域服务`
-8. `读模型设计`
-9. `关系总览`
-10. `完备性检查`
-11. `结论确认清单`
+3. `候选事件池与筛选`
+4. `建模方案对比`
+5. `领域事件清单`
+6. `命令清单`
+7. `Policy/流程规则`
+8. `聚合设计`
+9. `领域服务`
+10. `读模型设计`
+11. `关系总览`
+12. `完备性检查`
+13. `结论确认清单`
 
 Only list domain services that are truly needed.
 
-Before persistence, `结论确认清单` must list the design conclusions the user should confirm or correct one by one. Include boundary choices, actors and affected subjects, event names and meanings, command responsibilities, policies, aggregate boundaries, invariants, read models, relationships, assumptions, ambiguous business terms, and alternative interpretations that could change the model.
+Use `候选事件池与筛选` to show important brainstormed candidates, especially candidates that were rejected, split, renamed, downgraded, or left unresolved. Keep this compact; it is a reasoning aid, not a second event catalog.
 
-For each confirmation item, explain which event, command, aggregate, policy, read model, or relationship it affects. After confirmation and persistence, include only remaining unresolved items in the final summary.
+Use `建模方案对比` only when there are meaningful alternatives. Include 2-3 options, trade-offs, and the recommended option.
+
+Before persistence, `结论确认清单` must list only unconfirmed or newly changed design conclusions the user should confirm or correct. Include boundary choices, actors and affected subjects, event names and meanings, command responsibilities, policies, aggregate boundaries, invariants, read models, relationships, assumptions, ambiguous business terms, and alternative interpretations that could change the model when they were not already confirmed earlier.
+
+For each confirmation item, explain which event, command, aggregate, policy, read model, or relationship it affects. Do not repeat items already confirmed in earlier sections unless they changed after confirmation. After confirmation and persistence, include only remaining unresolved items in the final summary.
 
 ## Diagram Rules
 
@@ -293,6 +413,9 @@ If an existing PlantUML event-storming style exists, continue it. Prefer one loc
 
 Before finalizing, check:
 
+- Candidate events were brainstormed before final event selection when the requirement had non-trivial ambiguity.
+- Rejected, split, renamed, downgraded, or unresolved candidate events have a stated reason when they matter to the design.
+- Meaningful modeling alternatives were compared before choosing contested event, policy, process, aggregate, or read-model boundaries.
 - Every command has an initiating actor or external system.
 - Every domain event has a production path from actor -> command -> aggregate/process -> event.
 - Every important event has an affected actor, subject, read model, policy, or downstream relationship.

@@ -4,18 +4,33 @@
 
 DevFlow Skills is a set of Codex engineering workflow skills. It organizes DDD, TDD, planning, execution, debugging, review, verification, and branch finishing into a composable workflow system.
 
+## Important: Use Plan Mode First
+
+Before using DevFlow Skills, enable Plan mode in Codex.
+
+These skills assume a workflow of clarify first, model first, plan first, then execute. This is especially important for DDD, TDD, implementation planning, debugging, and review workflows. Without Plan mode, Codex can be pulled into the user's table-driven, CRUD-page, or implementation-first framing and may start coding or produce an unconfirmed full design too early.
+
+Recommended usage:
+
+1. Enable Plan mode first.
+2. Let `engineering-workflow-router` classify the task and choose the required skills.
+3. Follow the selected skill's confirmation, modeling, or planning workflow.
+4. Move to implementation, verification, commit, or PR only after user confirmation.
+
+Do not treat Plan mode as optional; it is the entry guard for the DevFlow workflow.
+
 ## Installation
 
 Install all skills from the repository root:
 
 ```bash
-npx skills add https://github.com/one-eyed-fish/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
+npx skills add https://github.com/LiTeXz/devflow-skills.git -g -a codex --skill engineering-workflow-router ddd-event-storming-design ddd-to-tdd-handoff implementation-planning executing-implementation-plan systematic-debugging verification-before-completion requesting-code-review receiving-code-review finishing-development-branch parallel-agent-orchestration tdd-skill spring-web-boundaries
 ```
 
 Install a single skill:
 
 ```bash
-npx skills add https://github.com/one-eyed-fish/devflow-skills/tree/main/engineering-workflow-router -g -a codex
+npx skills add https://github.com/LiTeXz/devflow-skills/tree/main/engineering-workflow-router -g -a codex
 ```
 
 Restart Codex after installation so the new skills are loaded.

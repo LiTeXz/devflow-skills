@@ -17,6 +17,8 @@ CASES = [
     ("valid_design", EXAMPLES / "valid_design.md", ["--require-sections"], 0),
     ("table_first", EXAMPLES / "table_first.md", [], 1),
     ("flat_admin", EXAMPLES / "flat_admin.md", [], 1),
+    ("full_draft_before_gate", EXAMPLES / "full_draft_before_gate.md", [], 1),
+    ("data_model_echo", EXAMPLES / "data_model_echo.md", [], 1),
 ]
 
 
