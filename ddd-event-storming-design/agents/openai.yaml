@@ -1,0 +1,7 @@
+interface:
+  display_name: "DDD Event Storming"
+  short_description: "Pure DDD modeling from events"
+  default_prompt: "Use $ddd-event-storming-design to analyze business requirements with event storming and produce a pure DDD domain design specification."
+
+policy:
+  allow_implicit_invocation: true

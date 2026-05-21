@@ -1,0 +1,4 @@
+interface:
+  display_name: "DDD to TDD Handoff"
+  short_description: "Convert DDD model artifacts into executable TDD slices"
+  default_prompt: "Use $ddd-to-tdd-handoff to turn the confirmed DDD design into small TDD implementation slices."
