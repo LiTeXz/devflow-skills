@@ -165,3 +165,37 @@ Expected guardrail:
 - Explain which downstream artifacts are blocked by the current gate: `actors.md`, `events.md`, `commands.md`, `aggregates/*`, and `read-models.md`.
 - Ask one focused confirmation question about the problem boundary before continuing.
 - Do not fill events, commands, policies, aggregates, or read models with speculative conclusions just because the repository structure is known.
+
+## Case 16: Raw Requirements Need Intake
+
+Prompt: "Here are meeting notes: HR can onboard employees, managers can request transfers, OA sends organization changes, finance needs a monthly headcount report, and admins need pages to edit departments."
+
+Expected guardrail:
+
+- Start with requirements intake before formal DDD modeling.
+- Produce stakeholder, requirement item, business subject, trigger/follow-up, rules/dependencies, and assumptions tables.
+- Assign requirement IDs when multiple needs are present.
+- Do not turn operation labels such as edit departments directly into commands or aggregates.
+- Ask the requirements-intake gate question before using the intake as modeling input if the gaps could affect domain boundary, actors, events, commands, or read models.
+
+## Case 17: Requirement Traceability
+
+Prompt: "Use these confirmed requirements REQ-001 to REQ-006 and produce the DDD model."
+
+Expected guardrail:
+
+- Keep requirement IDs as traceability anchors.
+- Link accepted commands to requirement IDs.
+- Link read models to query/view requirement IDs.
+- Link trigger/follow-up requirements to accepted events plus policies/processes, read-model projection, external integration concern, or rejected/downgraded candidate with a reason.
+- Mark any requirement with no command, event, read model, or explicit rejection as uncovered in completeness check.
+
+## Case 18: Learning-Oriented Review
+
+Prompt: "Teach me why this candidate aggregate is wrong and how to improve it."
+
+Expected guardrail:
+
+- Use a short principle statement and a compact stage-specific checklist.
+- Contrast requirement label versus command, trigger row versus domain event, or business subject versus aggregate when relevant.
+- Keep the explanation framework- and language-neutral unless the user asks otherwise.

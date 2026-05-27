@@ -1,13 +1,15 @@
 ---
 name: ddd-event-storming-design
-description: 使用事件风暴和 CQRS 思想进行纯 DDD 领域建模。Use this skill when Codex needs to analyze business requirements, evolve a persistent domain model, identify actors and multi-role collaboration, domain events, commands, policies, aggregates, domain services, read models, produce structured Markdown or optional Mermaid/PlantUML diagrams, and review designs that may be CRUD, database, package-structure, or DDD-terminology driven instead of problem-domain driven. Especially use for CRUD-looking admin requirements such as company, department, position, employee, account, role, or permission management that need behavior-first modeling instead of flat noun aggregates.
+description: 使用事件风暴、CQRS 和需求追踪进行通用 DDD 领域建模。Use this skill when Codex needs to clarify raw business requirements, split stakeholder needs into requirement items, evolve a persistent domain model, identify actors and multi-role collaboration, domain events, commands, policies, aggregates, domain services, read models, produce structured Markdown or optional Mermaid/PlantUML diagrams, and review designs that may be CRUD, database, package-structure, or DDD-terminology driven instead of problem-domain driven. Especially use for CRUD-looking admin requirements such as company, department, position, employee, account, role, or permission management that need behavior-first modeling instead of flat noun aggregates.
 ---
 
 # DDD Event Storming Design
 
 ## Core Rule
 
-Use event storming as the entry point for DDD modeling.
+Use event storming as the core entry point for DDD modeling. Requirements intake may precede it when the user's input still needs requirement-level structure.
+
+When the input is a raw requirement, meeting note, feature list, user story dump, or mixed CRUD/page/API description, first run a lightweight requirements intake before domain modeling. Requirements intake is pre-modeling discovery: identify stakeholders, requirement items, business subjects, triggers, constraints, inputs/outputs, assumptions, and gaps. Do not turn this intake directly into aggregates, commands, events, APIs, packages, or code.
 
 Treat event storming as collaborative brainstorming followed by disciplined convergence. First create a broad candidate event pool from business language, actor goals, lifecycle changes, failures, external facts, and query needs. Then filter candidates into accepted domain events only when they have business meaning, a production path, and a consequence for actors, rules, policies, aggregates, or read models.
 
@@ -47,10 +49,11 @@ Use a hybrid workflow: collaborative brainstorming for discovery, artifact-guide
 - When the user wants a fast draft, still stop at the first unconfirmed gate that can change downstream events, commands, aggregates, or read models.
 - When the user wants files, treat each `event-storming/` file as a stage artifact. Create or update only the stage whose conclusions are confirmed; do not fill downstream files with speculative content.
 
-Use a two-stage workflow for requirements-driven modeling:
+Use a three-stage workflow for requirements-driven modeling:
 
-1. Design draft: analyze the request, read relevant existing model files if any, brainstorm candidate events and modeling alternatives, infer the next useful design section, and present only the conclusions that are safe to validate at the current confirmation gate. Present a complete candidate model only after upstream gates that affect it are already confirmed or explicitly supplied by the user.
-2. Section confirmation and persistence: confirm design sections with the user while the draft is being shaped. Create or update `event-storming/` files only after the user explicitly confirms the candidate model, the changed sections, or a specific set of changes.
+1. Requirements intake when needed: split raw requirements into requirement-level tables without using DDD tactical terms as conclusions. Assign stable requirement IDs when the input contains multiple user-visible needs or will later be implemented.
+2. Design draft: analyze the request, read relevant existing model files if any, brainstorm candidate events and modeling alternatives, infer the next useful design section, and present only the conclusions that are safe to validate at the current confirmation gate. Present a complete candidate model only after upstream gates that affect it are already confirmed or explicitly supplied by the user.
+3. Section confirmation and persistence: confirm design sections with the user while the draft is being shaped. Create or update `event-storming/` files only after the user explicitly confirms the candidate model, the changed sections, or a specific set of changes.
 
 Do not create or update persistent model files from a new or changed requirement before confirmation. User requirements are often incomplete, and the requester may not know which missing facts matter for DDD modeling.
 
@@ -66,6 +69,27 @@ If it does not exist:
 - If the user only wants discussion, output the same structure in chat without creating files.
 
 Do not require the user to provide complete requirements upfront. Accept small increments, design from what is available, and expose assumptions, alternatives, and missing business facts as conclusions to confirm before persisting them.
+
+## Requirements Intake
+
+Use requirements intake when the input is broad, messy, implementation-shaped, or likely to become implementation work later. Keep it language- and framework-neutral.
+
+Output only requirement-level facts in this stage:
+
+- `干系人表`: role, goal/pain, authority or limitation, notes.
+- `需求条目表`: requirement ID, scenario, stakeholder/affected subject, business subject, operation type such as view/create/modify/close/async/timer, preconditions, constraints, input/output, gaps.
+- `业务主体视图`: business subject, covered requirement IDs, responsibilities/rules, key inputs/outputs.
+- `触发/后续动作表`: trigger condition, follow-up action or impact, related stakeholders, affected business subject, assumptions.
+- `业务规则与依赖`: rule/constraint, related subject, dependent external system or prior fact, notes.
+- `假设与待确认清单`: item, description, owner if known, priority if useful.
+
+Rules:
+
+- Requirement IDs are traceability anchors, not architecture names.
+- `业务主体视图` can propose subjects for exploration, but it must not become aggregates without event-command-rule proof.
+- Operation types such as create/update/delete are only intake labels. Translate them into business intent before commands.
+- Trigger/follow-up rows are candidate material for events, policies, processes, or read-model updates; do not accept them as domain events without screening.
+- If the user only needs requirements analysis, stop here and ask for confirmation before modeling.
 
 ## Brainstorming Adaptation
 
@@ -110,11 +134,12 @@ When a key business decision needs user confirmation:
 
 Use confirmation gates for sections that determine downstream modeling. Do not fully expand later sections past these gates unless the user already supplied the answer explicitly:
 
-1. Problem-domain gate: confirm the domain name, included responsibilities, excluded responsibilities, and whether the request is a CRUD-template risk. Do this before finalizing actor roles, event screening, commands, aggregates, or read models.
-2. Actor and authority gate: confirm command initiators, affected subjects, external systems, downstream systems, and whether any external source such as OA is authoritative. Do this before deriving accepted events and policies.
-3. Key-rule gate: confirm business rules that shape events and aggregate boundaries, such as single versus multiple assignments, manager eligibility, deletion versus archive, conflict precedence, and automatic versus manual follow-up. Do this before finalizing events, commands, invariants, and policies.
-4. Modeling-alternative gate: when 2-3 approaches are plausible, confirm the recommended approach or the user's chosen alternative before finalizing aggregate boundaries and read models.
-5. Persistence gate: before writing files, confirm only unconfirmed or changed persistence-sensitive conclusions.
+1. Requirements-intake gate: when the input has many scenarios or stakeholders, confirm the requirement items, stakeholders, business subjects, triggers, and major gaps before using them as modeling input.
+2. Problem-domain gate: confirm the domain name, included responsibilities, excluded responsibilities, and whether the request is a CRUD-template risk. Do this before finalizing actor roles, event screening, commands, aggregates, or read models.
+3. Actor and authority gate: confirm command initiators, affected subjects, external systems, downstream systems, and whether any external source such as OA is authoritative. Do this before deriving accepted events and policies.
+4. Key-rule gate: confirm business rules that shape events and aggregate boundaries, such as single versus multiple assignments, manager eligibility, deletion versus archive, conflict precedence, and automatic versus manual follow-up. Do this before finalizing events, commands, invariants, and policies.
+5. Modeling-alternative gate: when 2-3 approaches are plausible, confirm the recommended approach or the user's chosen alternative before finalizing aggregate boundaries and read models.
+6. Persistence gate: before writing files, confirm only unconfirmed or changed persistence-sensitive conclusions.
 
 When a request is CRUD-looking or contains contested boundaries, prefer a staged response:
 
@@ -140,6 +165,7 @@ Use this structure when persisting the model:
 ```text
 event-storming/
   README.md
+  requirements.md
   actors.md
   domain-boundary.md
   glossary.md
@@ -155,17 +181,19 @@ event-storming/
 
 Treat these files as ordered design artifacts, not as a checklist to complete immediately:
 
-1. `domain-boundary.md` must be stable before finalizing actors, events, commands, aggregates, or read models.
-2. `actors.md` must be stable before accepting events and commands, because command initiators and affected subjects define event meaning.
-3. `events.md` must distinguish candidate-event screening notes from accepted domain events. Accepted events require business meaning, production path, and downstream consequence.
-4. `commands.md`, `policies.md`, and `relationships.md` depend on accepted events and actor authority.
-5. `aggregates/<aggregate-name>.md` depends on a coherent command-event-rule model. Do not create aggregate files merely because nouns or tables exist.
-6. `read-models.md` depends on accepted events and projection needs. If a read model cannot be projected, return to events or command fields before persisting it.
-7. `completeness-check.md` is the final gate and should record remaining unresolved questions instead of hiding them in downstream artifacts.
+1. `requirements.md` is optional but useful for large or raw inputs. It records requirement-level facts and traceability anchors before DDD modeling.
+2. `domain-boundary.md` must be stable before finalizing actors, events, commands, aggregates, or read models.
+3. `actors.md` must be stable before accepting events and commands, because command initiators and affected subjects define event meaning.
+4. `events.md` must distinguish candidate-event screening notes from accepted domain events. Accepted events require business meaning, production path, and downstream consequence.
+5. `commands.md`, `policies.md`, and `relationships.md` depend on accepted events and actor authority.
+6. `aggregates/<aggregate-name>.md` depends on a coherent command-event-rule model. Do not create aggregate files merely because nouns or tables exist.
+7. `read-models.md` depends on accepted events and projection needs. If a read model cannot be projected, return to events or command fields before persisting it.
+8. `completeness-check.md` is the final gate and should record remaining unresolved questions instead of hiding them in downstream artifacts.
 
 File responsibilities:
 
 - `README.md`: entry index only; current model status and file navigation.
+- `requirements.md`: stakeholder table, requirement items, business subject view, trigger/follow-up table, constraints, assumptions, and requirement IDs.
 - `actors.md`: business actors, affected subjects, external systems, timers, and which commands/events they initiate or care about.
 - `domain-boundary.md`: current problem domain, included responsibilities, excluded facts, assumptions, evolution notes.
 - `glossary.md`: ubiquitous language and business terms.
@@ -183,15 +211,16 @@ For each user request:
 
 1. Classify the request as new capability, changed capability, expanded problem domain, or design review.
 2. Read only relevant model files before deriving the draft.
-3. Build a candidate event pool before selecting final events.
-4. Compare modeling approaches when a candidate event, actor responsibility, or aggregate boundary has multiple plausible interpretations.
-5. Produce only the next safe design artifact when upstream gates are unresolved. Produce a complete candidate design only when boundary, actor/authority, key rules, and modeling alternatives are already confirmed or explicitly supplied.
-6. Call out assumptions, ambiguous terms, alternative interpretations, and missing business rules as inferred design conclusions, not as pre-design questions.
-7. Confirm design sections incrementally when their conclusions affect later modeling choices.
-8. After confirmation, update affected indexes and aggregate files together only for the confirmed stage and its directly affected dependents.
-9. Preserve semantic evolution notes when renaming, splitting, merging, or moving concepts.
-10. If a new requirement exposes an incomplete old model, fix the model instead of hiding the gap behind a Policy, service, or handler.
-11. End with a short summary of changed files, changed domain concepts, newly unlocked next artifact, and remaining questions.
+3. Create or update requirements intake first when raw requirements, stakeholder lists, trigger tables, or requirement IDs are missing and would improve traceability.
+4. Build a candidate event pool before selecting final events.
+5. Compare modeling approaches when a candidate event, actor responsibility, or aggregate boundary has multiple plausible interpretations.
+6. Produce only the next safe design artifact when upstream gates are unresolved. Produce a complete candidate design only when boundary, actor/authority, key rules, and modeling alternatives are already confirmed or explicitly supplied.
+7. Call out assumptions, ambiguous terms, alternative interpretations, and missing business rules as inferred design conclusions, not as pre-design questions.
+8. Confirm design sections incrementally when their conclusions affect later modeling choices.
+9. After confirmation, update affected indexes and aggregate files together only for the confirmed stage and its directly affected dependents.
+10. Preserve semantic evolution notes when renaming, splitting, merging, or moving concepts.
+11. If a new requirement exposes an incomplete old model, fix the model instead of hiding the gap behind a Policy, service, or handler.
+12. End with a short summary of changed files, changed domain concepts, newly unlocked next artifact, and remaining questions.
 
 Do not regenerate the whole model unless the user asks or the existing model is too inconsistent to update safely.
 
@@ -209,12 +238,33 @@ Do not regenerate the whole model unless the user asks or the existing model is 
 - Read models must be derivable from domain events.
 - Iterate when commands, events, aggregates, or read models do not explain each other.
 
+## Traceability Rules
+
+When `requirements.md` or requirement IDs exist, maintain a lightweight trace from requirements to the domain model:
+
+- Each accepted command should list the requirement ID(s) or scenario(s) it satisfies.
+- Each read model should list the query/view requirement ID(s) it serves.
+- Each accepted event should list the command, policy, process, external fact, or trigger row that produces it.
+- Each trigger/follow-up requirement should resolve to an accepted event + policy/process, a read-model projection, an external integration concern, or a rejected/downgraded candidate with a reason.
+- If a requirement has no command, event, read model, or explicit rejection, mark it as uncovered in `完备性检查`.
+- Do not let traceability force fake events or fake aggregates. Traceability exposes gaps; it does not override domain modeling discipline.
+
+## Learning And Review Adaptation
+
+When the user is learning DDD, comparing approaches, or reviewing a model, add short teaching aids without turning the response into a lecture:
+
+- State the principle behind a recommendation in one sentence.
+- Use small contrast pairs such as requirement label versus command, trigger row versus domain event, business subject versus aggregate.
+- Add a compact checklist for the current stage only, such as aggregate boundary, event production path, or read-model projection.
+- Avoid framework-specific or language-specific advice unless the user asks for it.
+
 ## Workflow
 
 Follow this stage order. A later stage is blocked when its gate question could change the later model.
 
 ```text
-problem boundary
+requirements intake when needed
+  -> problem boundary
   -> actors and authority
   -> candidate event pool
   -> event screening
@@ -224,6 +274,21 @@ problem boundary
   -> read models
   -> relationships and completeness check
 ```
+
+### 0. Requirements Intake
+
+Use this stage only when the input needs requirement-level structure before modeling.
+
+Record stakeholders, requirement items, business subjects, triggers/follow-up actions, constraints, inputs/outputs, assumptions, and gaps. Assign stable IDs such as `REQ-001` when there is more than one requirement or when later implementation is likely.
+
+Keep this output explicitly separate from DDD conclusions:
+
+- Requirement item is not a command.
+- Business subject is not automatically an aggregate.
+- Trigger row is not automatically a domain event.
+- Operation type is not business intent.
+
+Confirm the intake when it could change the domain boundary, actors, events, commands, read models, or later implementation slices.
 
 ### 1. Define Scope
 
@@ -317,6 +382,7 @@ Rules:
 - Timer-triggered behavior still uses a command; the timer is an Actor.
 - Command fields include only information the actor must provide and information the aggregate cannot derive from current state or historical events.
 - If command execution needs information that cannot come from command fields or aggregate state/history, the event-command model is incomplete.
+- When requirement IDs exist, include the requirement ID(s) the command satisfies.
 
 ### 4. Model Policies And Processes
 
@@ -364,6 +430,7 @@ Separate query needs from command behavior.
 For each read model, specify:
 
 - user or query need
+- requirement ID(s) when available
 - identity
 - fields
 - events that create or update it
@@ -393,25 +460,29 @@ Examples:
 
 When responding in chat or updating model files, use this order:
 
-1. `问题域边界`
-2. `主体与协作场景`
-3. `候选事件池与筛选`
-4. `建模方案对比`
-5. `领域事件清单`
-6. `命令清单`
-7. `Policy/流程规则`
-8. `聚合设计`
-9. `领域服务`
-10. `读模型设计`
-11. `关系总览`
-12. `完备性检查`
-13. `结论确认清单`
+1. `需求拆解` when requirements intake is needed
+2. `问题域边界`
+3. `主体与协作场景`
+4. `候选事件池与筛选`
+5. `建模方案对比`
+6. `领域事件清单`
+7. `命令清单`
+8. `Policy/流程规则`
+9. `聚合设计`
+10. `领域服务`
+11. `读模型设计`
+12. `需求追踪`
+13. `关系总览`
+14. `完备性检查`
+15. `结论确认清单`
 
 Only list domain services that are truly needed.
 
 Use `候选事件池与筛选` to show important brainstormed candidates, especially candidates that were rejected, split, renamed, downgraded, or left unresolved. Keep this compact; it is a reasoning aid, not a second event catalog.
 
 Use `建模方案对比` only when there are meaningful alternatives. Include 2-3 options, trade-offs, and the recommended option.
+
+Use `需求追踪` only when requirement IDs or requirement tables exist. Keep it compact: requirement ID -> command/read model/event/policy or uncovered/rejected reason.
 
 Before persistence, `结论确认清单` must list only unconfirmed or newly changed design conclusions the user should confirm or correct. Include boundary choices, actors and affected subjects, event names and meanings, command responsibilities, policies, aggregate boundaries, invariants, read models, relationships, assumptions, ambiguous business terms, and alternative interpretations that could change the model when they were not already confirmed earlier.
 
@@ -447,6 +518,8 @@ Before finalizing, check:
 
 - The current response did not generate downstream artifacts past an unconfirmed gate.
 - Persisted files were updated only for confirmed stages or directly affected dependents.
+- Requirements intake, when used, stayed at requirement level and did not declare aggregates, commands, events, APIs, packages, or code.
+- Requirement IDs, when present, are traced to commands, read models, accepted events/policies, or explicit uncovered/rejected notes.
 - Candidate events were brainstormed before final event selection when the requirement had non-trivial ambiguity.
 - Rejected, split, renamed, downgraded, or unresolved candidate events have a stated reason when they matter to the design.
 - Meaningful modeling alternatives were compared before choosing contested event, policy, process, aggregate, or read-model boundaries.
@@ -470,6 +543,8 @@ Refuse or correct these patterns:
 
 - Starting by creating `application/domain/infrastructure` packages.
 - Renaming controller-service-dao into DDD layers.
+- Treating requirement tables, user stories, operation labels, or business subject views as the domain model without event-command-rule screening.
+- Losing traceability from confirmed requirement items to commands, events, read models, policies, or explicit uncovered/rejected notes.
 - Designing aggregates from database tables, CRUD pages, or REST resources.
 - Designing one aggregate per noun in a CRUD-looking prompt without proving lifecycle and consistency boundaries.
 - Filling every `event-storming/` file in one pass for a new ambiguous requirement before boundary, actor authority, key rules, and event screening are confirmed.

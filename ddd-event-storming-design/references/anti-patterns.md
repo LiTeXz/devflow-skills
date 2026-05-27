@@ -1,6 +1,8 @@
 # DDD Modeling Anti-Patterns
 
 - Table-first modeling: derive aggregates and events from database tables instead of business facts.
+- Requirements-table echo: turn requirement rows, user stories, operation labels, or business subject views directly into commands, events, aggregates, APIs, or packages.
+- Lost requirement traceability: accept a model without showing how confirmed requirement items are covered by commands, read models, events/policies, or explicit uncovered/rejected notes.
 - CRUD masquerading as commands: name commands as create/update/delete operations without business intent.
 - Technical event pollution: model MQ delivery, logs, cache refresh, HTTP calls, or notifications as domain events when the business does not care.
 - Policy hides invariant: move aggregate rules into an event reaction to avoid modeling the consistency boundary.
