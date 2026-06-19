@@ -24,13 +24,13 @@ When the project still uses plain `.drawio` sources, prefer full uncompressed XM
 ```xml
 <mxfile host="app.diagrams.net">
   <diagram id="diagram-id" name="Diagram Name">
-    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-      <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        <!-- vertices and edges -->
-      </root>
-    </mxGraphModel>
+  <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <!-- vertices and edges -->
+    </root>
+  </mxGraphModel>
   </diagram>
 </mxfile>
 ```
