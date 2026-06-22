@@ -189,7 +189,7 @@ function handleSessionStart(): number {
     "Read-only inspection commands are allowed.",
   ]
   for (const line of lines) {
-    process.stdout.write(line + "\n")
+    process.stdout.write(`${line}\n`)
   }
   return 0
 }
@@ -202,7 +202,7 @@ function writeBlockMessage(decision: BlockDecision): void {
     "主 Agent 只能协调、审查和验证；请通过 worker/subagent 完成代码写入。",
   ]
   for (const line of lines) {
-    process.stderr.write(line + "\n")
+    process.stderr.write(`${line}\n`)
   }
 }
 
