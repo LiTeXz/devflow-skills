@@ -1,6 +1,6 @@
 {
   "name": "devflow-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DevFlow engineering workflow skills for Codex: routing, DDD, TDD, planning, execution, debugging, review, verification, and branch finishing.",
   "author": {
   "name": "LiTeXz",
