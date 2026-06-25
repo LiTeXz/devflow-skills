@@ -10,6 +10,7 @@ import {
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
+	readFileSync,
 	unlinkSync,
 	writeFileSync,
 } from "node:fs";
@@ -35,7 +36,7 @@ function cleanupState(): void {
 import { containsBlockedGitGh, containsGitOrGh } from "@/shared/command-parser";
 import { loadState, saveState } from "@/shared/state-store";
 import {
-	shouldBlockSessionStart,
+	ensureDfPublisherAgent,
 	shouldBlockTool,
 } from "./prevent-git-github-operations";
 
@@ -125,26 +126,7 @@ describe("containsBlockedGitGh", () => {
 });
 
 describe("GitGhOperationsHook SessionStart", () => {
-	it("warns when .codex/agents/df-publisher.toml is missing", () => {
-		const projectDir = mkdtempSync(join(tempDir, "no-agents-"));
-		const message = shouldBlockSessionStart(projectDir);
-		expect(message).not.toBeUndefined();
-		expect(message).toInclude("df-publisher");
-		expect(message).toInclude("插件不完整");
-	});
-
-	it("includes plugin root and copy commands when pluginRoot is provided", () => {
-		const projectDir = mkdtempSync(join(tempDir, "no-agents-pr-"));
-		const message = shouldBlockSessionStart(projectDir, "/fake/plugin/root");
-		expect(message).not.toBeUndefined();
-		expect(message).toInclude("/fake/plugin/root");
-		expect(message).toInclude("cp");
-		expect(message).toInclude("mkdir -p");
-		expect(message).toInclude("copy");
-		expect(message).toInclude("mkdir");
-	});
-
-	it("allows when df-publisher.toml exists", () => {
+	it("returns undefined when df-publisher.toml already exists", () => {
 		const projectDir = mkdtempSync(join(tempDir, "has-agents-"));
 		const agentsDir = join(projectDir, ".codex", "agents");
 		mkdirSync(agentsDir, { recursive: true });
@@ -152,8 +134,52 @@ describe("GitGhOperationsHook SessionStart", () => {
 			join(agentsDir, "df-publisher.toml"),
 			'name = "df-publisher"',
 		);
-		const message = shouldBlockSessionStart(projectDir);
-		expect(message).toBeUndefined();
+		expect(ensureDfPublisherAgent(projectDir)).toBeUndefined();
+	});
+
+	it("auto-installs df-publisher.toml when pluginRoot source exists", () => {
+		const projectDir = mkdtempSync(join(tempDir, "auto-install-"));
+		const pluginDir = mkdtempSync(join(tempDir, "plugin-root-"));
+		const pluginAgentsDir = join(pluginDir, "agents");
+		mkdirSync(pluginAgentsDir, { recursive: true });
+		writeFileSync(
+			join(pluginAgentsDir, "df-publisher.toml"),
+			'name = "df-publisher"',
+		);
+
+		const message = ensureDfPublisherAgent(projectDir, pluginDir);
+		expect(message).not.toBeUndefined();
+		expect(message).toInclude("自动安装");
+
+		const installedPath = join(
+			projectDir,
+			".codex",
+			"agents",
+			"df-publisher.toml",
+		);
+		expect(existsSync(installedPath)).toBe(true);
+		expect(readFileSync(installedPath, "utf-8")).toInclude("df-publisher");
+	});
+
+	it("warns with copy commands when pluginRoot source does not exist", () => {
+		const projectDir = mkdtempSync(join(tempDir, "no-source-"));
+		const message = ensureDfPublisherAgent(
+			projectDir,
+			"/nonexistent/plugin/root",
+		);
+		expect(message).not.toBeUndefined();
+		expect(message).toInclude("插件不完整");
+		expect(message).toInclude("/nonexistent/plugin/root");
+		expect(message).toInclude("mkdir -p");
+		expect(message).toInclude("cp");
+	});
+
+	it("warns with generic instructions when pluginRoot is not provided", () => {
+		const projectDir = mkdtempSync(join(tempDir, "no-plugin-root-"));
+		const message = ensureDfPublisherAgent(projectDir);
+		expect(message).not.toBeUndefined();
+		expect(message).toInclude("df-publisher");
+		expect(message).toInclude("插件不完整");
 	});
 });
 

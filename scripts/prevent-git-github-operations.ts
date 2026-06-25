@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { containsBlockedGitGh } from "@/shared/command-parser";
 import {
@@ -19,37 +19,45 @@ import {
 } from "@/shared/payload";
 import { isDfPublisherSession } from "@/shared/state-store";
 
-export function shouldBlockSessionStart(
+export function ensureDfPublisherAgent(
 	cwd: string,
 	pluginRoot?: string,
 ): string | undefined {
 	const agentsDir = join(cwd, ".codex", "agents");
 	const dfPublisherToml = join(agentsDir, "df-publisher.toml");
-	if (!existsSync(dfPublisherToml)) {
-		const lines = [
-			"DevFlow 插件不完整：未找到 df-publisher 子代理定义。",
-			`预期位置：${dfPublisherToml}`,
-		];
-		if (pluginRoot) {
-			lines.push(`插件根目录：${pluginRoot}`);
-			lines.push("");
-			lines.push("请复制安装（按平台选择）：");
-			lines.push(
-				`  Linux/macOS: mkdir -p .codex/agents && cp "${pluginRoot}/agents/df-publisher.toml" .codex/agents/df-publisher.toml`,
-			);
-			lines.push(
-				`  Windows:     mkdir .codex\\agents 2>nul & copy "${pluginRoot}\\agents\\df-publisher.toml" .codex\\agents\\df-publisher.toml`,
-			);
-		} else {
-			lines.push("");
-			lines.push("请在项目 .codex/agents/ 目录中安装 df-publisher.toml，");
-			lines.push(
-				"或运行插件安装流程将 agents/df-publisher.toml 复制到 .codex/agents/。",
-			);
+	if (existsSync(dfPublisherToml)) return undefined;
+
+	if (pluginRoot) {
+		const sourceToml = join(pluginRoot, "agents", "df-publisher.toml");
+		if (existsSync(sourceToml)) {
+			mkdirSync(agentsDir, { recursive: true });
+			copyFileSync(sourceToml, dfPublisherToml);
+			return `DevFlow: 已自动安装 df-publisher 子代理定义到 ${dfPublisherToml}`;
 		}
-		return lines.join("\n");
 	}
-	return undefined;
+
+	const lines = [
+		"DevFlow 插件不完整：未找到 df-publisher 子代理定义。",
+		`预期位置：${dfPublisherToml}`,
+	];
+	if (pluginRoot) {
+		lines.push(`插件根目录：${pluginRoot}`);
+		lines.push("");
+		lines.push("请手动复制安装（按平台选择）：");
+		lines.push(
+			`  Linux/macOS: mkdir -p .codex/agents && cp "${pluginRoot}/agents/df-publisher.toml" .codex/agents/df-publisher.toml`,
+		);
+		lines.push(
+			`  Windows:     mkdir .codex\\agents 2>nul & copy "${pluginRoot}\\agents\\df-publisher.toml" .codex\\agents\\df-publisher.toml`,
+		);
+	} else {
+		lines.push("");
+		lines.push("请在项目 .codex/agents/ 目录中安装 df-publisher.toml，");
+		lines.push(
+			"或运行插件安装流程将 agents/df-publisher.toml 复制到 .codex/agents/。",
+		);
+	}
+	return lines.join("\n");
 }
 
 export function shouldBlockTool(
@@ -67,7 +75,7 @@ export function shouldBlockTool(
 	return true;
 }
 
-function writeSessionStartWarning(message: string): void {
+function writeSessionStartMessage(message: string): void {
 	for (const line of message.split("\n")) {
 		process.stdout.write(`${line}\n`);
 	}
@@ -96,9 +104,9 @@ function main(): number {
 		const toolInput = findToolInput(payload) ?? {};
 		const cwd = findWorkdir(payload, toolInput);
 		const pluginRoot = process.env.PLUGIN_ROOT;
-		const message = shouldBlockSessionStart(cwd, pluginRoot);
+		const message = ensureDfPublisherAgent(cwd, pluginRoot);
 		if (message) {
-			writeSessionStartWarning(message);
+			writeSessionStartMessage(message);
 			return 0;
 		}
 		return 0;
