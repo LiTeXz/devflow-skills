@@ -320,7 +320,7 @@ export function isPythonSafeTestCommand(args: string[]): boolean {
 	if (script.startsWith("test-") || script.startsWith("test_")) return true;
 	if (script.startsWith("run_") && script.endsWith("examples.py")) return true;
 
-	return scriptPath === "skills/tdd-skill/scripts/run_protocol_examples.py";
+	return scriptPath === "skills/df-tdd-skill/scripts/run_protocol_examples.py";
 }
 
 export function pythonWriteReason(args: string[]): string | undefined {

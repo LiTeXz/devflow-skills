@@ -1,0 +1,4 @@
+interface:
+  display_name: "Parallel Agent Orchestration"
+  short_description: "Split independent work across agents safely"
+  default_prompt: "Use $df-parallel-agent-orchestration to split independent engineering work into non-overlapping agent tasks."

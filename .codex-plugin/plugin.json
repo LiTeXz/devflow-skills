@@ -1,6 +1,6 @@
 {
 	"name": "devflow-skills",
-	"version": "0.2.9",
+	"version": "0.2.10",
 	"description": "DevFlow engineering workflow skills for Codex: routing, DDD, TDD, planning, execution, debugging, review, verification, and branch finishing.",
 	"composerIcon": "./assets/app-icon-small.svg",
 	"logo": "./assets/app-icon.png",
@@ -23,7 +23,8 @@
 		"capabilities": ["Interactive", "Read", "Write"],
 		"websiteURL": "https://github.com/LiTeXz/devflow-skills",
 		"defaultPrompt": [
-			"Use engineering-workflow-router to classify this task",
+			"Use df-engineering-workflow-router to classify this task",
+      "Use `df-publisher`subagent, management this git and github.",
 			"Create a DDD to TDD implementation plan",
 			"Verify this branch before completion"
 		],

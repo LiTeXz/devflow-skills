@@ -166,7 +166,7 @@ describe("MainAgentWriteGuard", () => {
 			expect(
 				shouldBlockTool("Bash", {
 					command:
-						"python3 -X utf8 skills/tdd-skill/scripts/run_protocol_examples.py",
+						"python3 -X utf8 skills/df-tdd-skill/scripts/run_protocol_examples.py",
 				}),
 			).toBeUndefined();
 			expect(
