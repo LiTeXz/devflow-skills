@@ -55,7 +55,22 @@ Prompt: "Order details page shows risk score, but no event carries risk data."
 Expected guardrail:
 
 - Identify the projection gap.
-- Adjust events, command fields, or external-system relationship instead of polluting aggregate state.
+- Do not create a domain event just to refresh the order details page.
+- First check whether risk score is current-state query data, a query-side join, technical projection input, accepted-event payload enrichment, or an external read source.
+- Add or adjust a domain event only if risk score changes a command-side business rule, policy/process, aggregate behavior, or downstream business capability.
+- Do not pollute aggregate state with report-only fields.
+
+## Case 6b: Read-Model-Only Field Change
+
+Prompt: "Department options and employee pages need the latest department name, so add DepartmentRenamedEvent."
+
+Expected guardrail:
+
+- Treat department name refresh as a read-model/query need until a non-read-model business consumer is identified.
+- Ask who consumes the rename as a business fact and what behavior, rule, process, or downstream business capability changes.
+- Reject or downgrade the event when the only consumers are pages, options, reports, caches, or projections.
+- Record the read source as current-state lookup, query-side join, technical projection input, accepted-event payload enrichment, audit/log data, or external-source data.
+- Accept the event only when a command, policy/process, aggregate, or downstream business capability consumes the rename as a business fact.
 
 ## Case 7: CRUD-Looking Admin Nouns
 
@@ -97,7 +112,7 @@ Prompt: "Let's brainstorm all events for a recruitment workflow. Candidates incl
 Expected guardrail:
 
 - Treat the list as a candidate event pool, not the final event list.
-- Screen candidates by business meaning, production path, affected subject, policy/read-model impact, and current-domain boundary.
+- Screen candidates by business meaning, production path, affected subject, non-read-model business consumer, policy/process impact, and current-domain boundary.
 - Reject or downgrade technical facts such as email delivery unless the business explicitly cares.
 - Split or rename vague data-change events such as `候选人资料已更新` when specific business facts matter.
 - Compare plausible modeling approaches when approval, offer, and onboarding boundaries could be aggregate, process manager, or external-system responsibilities.
@@ -187,7 +202,7 @@ Expected guardrail:
 - Keep requirement IDs as traceability anchors.
 - Link accepted commands to requirement IDs.
 - Link read models to query/view requirement IDs.
-- Link trigger/follow-up requirements to accepted events plus policies/processes, read-model projection, external integration concern, or rejected/downgraded candidate with a reason.
+- Link trigger/follow-up requirements to accepted events plus policies/processes, read-model sourcing/projection, external integration concern, or rejected/downgraded candidate with a reason.
 - Mark any requirement with no command, event, read model, or explicit rejection as uncovered in completeness check.
 
 ## Case 18: Learning-Oriented Review

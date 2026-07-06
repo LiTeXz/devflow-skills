@@ -13,8 +13,9 @@
 - Combined outcome event: merge different facts such as `已停用或解散` into one event even though they can trigger different policies or actor consequences.
 - Upsert sync modeling: treat external master-data synchronization as a simple create/update when the business cares about dependency ordering, conflict handling, missing parent records, retries, or failure status.
 - Read model leakage: add page/report fields to aggregate state only because a query needs them.
+- Projection-driven event: create a domain event only because a read model, page, report, cache, or projection needs a field refreshed.
 - Framework-shaped domain: treat controllers, DTOs, repositories, or packages as the domain model.
 - Unproduced event: keep a domain event without a command, policy, process, or external fact that can produce it.
-- Unprojectable read model: define a read model that cannot be built from domain events without identifying the missing event or field.
+- Unexplained read source: define a read model field without identifying whether it comes from accepted events, current-state lookup, query-side joins, technical projection input, enriched payloads, audit/log data, external sources, or a confirmed domain-event gap.
 - Premature bounded contexts: split contexts before the current problem domain has enough evidence.
 - Artifact flooding: fill every `event-storming/` file in one pass for a new ambiguous requirement, causing speculative downstream events, commands, aggregates, and read models to look confirmed.

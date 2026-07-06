@@ -11,7 +11,7 @@ Use event storming as the core entry point for DDD modeling. Requirements intake
 
 When the input is a raw requirement, meeting note, feature list, user story dump, or mixed CRUD/page/API description, first run a lightweight requirements intake before domain modeling. Requirements intake is pre-modeling discovery: identify stakeholders, requirement items, business subjects, triggers, constraints, inputs/outputs, assumptions, and gaps. Do not turn this intake directly into aggregates, commands, events, APIs, packages, or code.
 
-Treat event storming as collaborative brainstorming followed by disciplined convergence. First create a broad candidate event pool from business language, actor goals, lifecycle changes, failures, external facts, and query needs. Then filter candidates into accepted domain events only when they have business meaning, a production path, and a consequence for actors, rules, policies, aggregates, or read models.
+Treat event storming as collaborative brainstorming followed by disciplined convergence. First create a broad candidate event pool from business language, actor goals, lifecycle changes, failures, external facts, and query needs. Then filter candidates into accepted domain events only when they have business meaning, a production path, and at least one business consumer that changes actor options, command-side rules, policies/processes, aggregates, or downstream business capabilities. Read-model projection, page display, cache refresh, or query completeness alone is not a sufficient reason to accept a domain event.
 
 Do not treat the first brainstormed event list as the final model. Candidate events are working material; accepted domain events are design conclusions.
 
@@ -33,7 +33,7 @@ Always translate data-driven or CRUD-driven requests into business-event explora
 
 Do not echo the user's data model back as a DDD model. If the user asks in CRUD terms, first explain the translation boundary briefly, then proceed through the confirmation gates in business language.
 
-Always identify the business actors, external systems, timers, and affected subjects before finalizing commands and events. Commands are issued by an actor; events change something that matters to one or more actors or read models.
+Always identify the business actors, external systems, timers, and affected subjects before finalizing commands and events. Commands are issued by an actor; accepted events change something that matters to one or more actors or business capabilities. Treat read models as projection consumers and discovery clues, not as standalone proof that a domain event exists.
 
 Unless the user explicitly asks for implementation, produce only domain design artifacts. Do not generate code, tests, framework structure, persistence mapping, or TDD plans.
 
@@ -108,6 +108,8 @@ For each candidate event, capture enough information to support convergence:
 - possible event name in completed business tense
 - initiating actor or external system if known
 - affected subject and downstream consumer
+- non-read-model business consumer and the behavior, rule, policy, process, or capability it changes
+- whether the candidate is only needed for query/display/projection and should be downgraded
 - possible producing command, aggregate, policy, process, or external fact
 - business reason to keep it
 - reason to reject, split, rename, downgrade to read-model data, or mark unresolved
@@ -187,7 +189,7 @@ Treat these files as ordered design artifacts, not as a checklist to complete im
 4. `events.md` must distinguish candidate-event screening notes from accepted domain events. Accepted events require business meaning, production path, and downstream consequence.
 5. `commands.md`, `policies.md`, and `relationships.md` depend on accepted events and actor authority.
 6. `aggregates/<aggregate-name>.md` depends on a coherent command-event-rule model. Do not create aggregate files merely because nouns or tables exist.
-7. `read-models.md` depends on accepted events and projection needs. If a read model cannot be projected, return to events or command fields before persisting it.
+7. `read-models.md` depends on accepted events, projection needs, and explicit non-event query sources. If a read model cannot be projected from accepted domain events, do not invent events for projection; first check current-state query, query-side joins, technical projection inputs, enriched payloads of already accepted events, or an external integration source.
 8. `completeness-check.md` is the final gate and should record remaining unresolved questions instead of hiding them in downstream artifacts.
 
 File responsibilities:
@@ -235,7 +237,7 @@ Do not regenerate the whole model unless the user asks or the existing model is 
 - Model behavior before structure.
 - For admin-system requirements, treat "management" pages as a discovery clue, not as the domain model. Reframe noun lists into lifecycle events, assignments, approvals, ownership changes, synchronization facts, and cross-role consequences.
 - Treat CQRS as a modeling perspective: commands change business state through the domain model; queries are satisfied by read models.
-- Read models must be derivable from domain events.
+- Read models should record their information sources, but query needs must not create domain events by themselves. A read-model-only field can come from current-state lookup, query-side joins, technical projection inputs, external sources, or accepted event payloads.
 - Iterate when commands, events, aggregates, or read models do not explain each other.
 
 ## Traceability Rules
@@ -345,7 +347,8 @@ Screen each candidate with these questions:
 
 - Does the business care that this fact happened?
 - Can an actor, timer, policy, process manager, aggregate, or external system produce it?
-- Does it change an actor's options, an affected subject's lifecycle, a rule decision, a policy reaction, or a read model?
+- Does it change an actor's options, an affected subject's lifecycle, a command-side rule decision, a policy reaction, a process, another aggregate, or a downstream business capability?
+- Is the only consumer a read model, page, report, cache, or projection? If so, reject it as a domain event and capture the need as query-side data, technical projection, current-state lookup, or audit/log material.
 - Is it specific enough, or should it be split or renamed?
 - Is it inside the current problem domain, or only an integration/technical detail?
 - Does keeping it improve the event-command-read-model explanation, or only mirror CRUD data changes?
@@ -354,7 +357,7 @@ Screen each candidate with these questions:
 
 Extract already-happened business facts as candidate events.
 
-Keep only facts that the current problem domain needs for business rules, state decisions, workflow progress, or read model construction.
+Keep only facts that the current problem domain needs for business rules, state decisions, workflow progress, policy/process reactions, aggregate collaboration, or downstream business capabilities. Do not keep a fact as a domain event only because a read model needs to refresh or display a field.
 
 Rules:
 
@@ -433,10 +436,11 @@ For each read model, specify:
 - requirement ID(s) when available
 - identity
 - fields
-- events that create or update it
-- whether it can be built from domain events
+- accepted domain events that create or update it, if any
+- non-event sources such as current-state lookup, query-side joins, technical projection inputs, enriched accepted-event payloads, or external read sources
+- whether any missing field reveals a real domain-event gap or only a query-side sourcing decision
 
-If a read model cannot be built from events, adjust events, command fields, or aggregate behavior. Do not pollute aggregates with report or page fields.
+If a read model cannot be built from accepted domain events, do not invent events for projection. First decide whether the field can come from current-state query, query-side joins, accepted event payload enrichment, technical projection, audit/log data, or external read sources. Add or change a domain event only when a non-read-model business consumer exists and the event has a production path.
 
 ## Relationship Rules
 
@@ -525,12 +529,15 @@ Before finalizing, check:
 - Meaningful modeling alternatives were compared before choosing contested event, policy, process, aggregate, or read-model boundaries.
 - Every command has an initiating actor or external system.
 - Every domain event has a production path from actor -> command -> aggregate/process -> event.
-- Every important event has an affected actor, subject, read model, policy, or downstream relationship.
+- Every accepted domain event has at least one business consumer other than read models, pages, reports, caches, or projection completeness.
+- No accepted domain event is justified only by read-model refresh, page display, cache update, report fields, or projection completeness.
+- Every important event has an affected actor, subject, command-side rule, policy/process, aggregate, or downstream business relationship.
 - Current-domain state-changing events are published by aggregates unless a clear exception is recorded.
 - Every command has the information it needs from command fields plus aggregate state/history.
 - Meaningful command outcomes are represented as events.
 - Generic events such as `信息已变更` have been replaced by specific facts or explicitly justified.
-- Every read model can be built from domain events.
+- Every read model records whether each field comes from accepted events, current-state lookup, query-side joins, technical projection inputs, enriched payloads, or external read sources.
+- Every read-model-only field is marked as query-side data, technical projection input, current-state lookup, audit/log material, or external-source data instead of being promoted to a domain event.
 - Policies do not hide aggregate invariants.
 - Domain services do not become procedural service layers.
 - Aggregates are derived from behavior, rules, identity, lifecycle, and invariants, not tables, CRUD resources, or noun lists.
@@ -552,6 +559,7 @@ Refuse or correct these patterns:
 - Using vague data-change events such as `信息已变更` when a concrete business fact is available.
 - Treating external master-data sync as a simple upsert when ordering, dependency, failure, or conflict resolution has business meaning.
 - Creating domain events for technical actions the business does not care about.
+- Creating domain events only because a read model, page, report, cache, or projection needs a field refreshed.
 - Putting report/page/query fields into aggregates for convenience.
 - Putting most business rules into command handlers, application services, listeners, repositories, or policies.
 - Splitting bounded contexts before understanding the current problem domain.
